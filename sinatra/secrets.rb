@@ -1,15 +1,22 @@
 require 'yaml'
 module Sinatra
+
+
   module Secrets
 
+    def self.registered(klass)
+      @klass = klass
+    end
+
     def self.twilio_key
-      file = YAML.load_file('./config/secrets.yml')
-      p MyApp.settings.secrets_dir
-      p file[ENV['RACK_ENV']][(__method__).to_s]
+      root = @klass.settings.secrets_dir || "./config"
+
+      file = YAML.load_file(root + '/secrets.yml')
+      file[ENV['RACK_ENV']][(__method__).to_s]
     end
 
     def self.method_missing method_name, *args, &block
-      self.send(:define_method, method_name) {p "send"}
+
     end
 
 
